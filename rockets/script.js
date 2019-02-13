@@ -2,10 +2,17 @@ let rocket;
 let population;
 let lifespan = 200;
 
+let lifeP;
+let count = 0;
+
+let target;
+
 function setup() {
-    createCanvas(750, 750);
+    createCanvas(750, 700);
     rocket = new Rocket();
     population = new Population();
+    // lifeP = createP();
+    target = createVector(width/2, 50)
 }
 
 function draw() {
@@ -13,18 +20,26 @@ function draw() {
     // rocket.update();
     // rocket.show();
     population.run();
+    // lifeP.html(count);
+    count++;
+    if (count == lifespan) {
+        count = 0; // continuously applies force
+    }
+
+    ellipse(target.x, target.y, 50, 50)
 }
 
 function DNA() {
     this.genes = [];
     for (var i = 0; i < lifespan; i++) {
         this.genes[i] = p5.Vector.random2D(); // each gene is a random vector
+        this.genes[i].setMag(0.1);
     }
 }
 
 function Population() {
     this.rockets = [];
-    this.popsize = 25 ;
+    this.popsize = 50;
 
     for (var i = 0; i < this.popsize; i++) {
         this.rockets[i] = new Rocket();
@@ -45,7 +60,6 @@ function Rocket() {
     this.vel = createVector();
     this.acc = createVector();
     this.dna = new DNA();
-    this.count = 0;
 
     this.applyForce = (force) => {
         this.acc.add(force); 
@@ -53,8 +67,7 @@ function Rocket() {
 
     // standard physics engine for motion. This is where the physics happens
     this.update = () => {
-        this.applyForce(this.dna.genes[this.count]);
-        this.count++;
+        this.applyForce(this.dna.genes[count]);
 
         this.pos.add(this.vel); 
         this.vel.add(this.acc);
