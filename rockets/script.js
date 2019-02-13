@@ -1,5 +1,6 @@
 let rocket;
 let population;
+let lifespan = 200;
 
 function setup() {
     createCanvas(750, 750);
@@ -12,6 +13,13 @@ function draw() {
     // rocket.update();
     // rocket.show();
     population.run();
+}
+
+function DNA() {
+    this.genes = [];
+    for (var i = 0; i < lifespan; i++) {
+        this.genes[i] = p5.Vector.random2D(); // each gene is a random vector
+    }
 }
 
 function Population() {
@@ -34,8 +42,10 @@ function Population() {
 // constructor function
 function Rocket() {
     this.pos = createVector(width/2, height);
-    this.vel = p5.Vector.random2D();
+    this.vel = createVector();
     this.acc = createVector();
+    this.dna = new DNA();
+    this.count = 0;
 
     this.applyForce = (force) => {
         this.acc.add(force); 
@@ -43,6 +53,9 @@ function Rocket() {
 
     // standard physics engine for motion. This is where the physics happens
     this.update = () => {
+        this.applyForce(this.dna.genes[this.count]);
+        this.count++;
+
         this.pos.add(this.vel); 
         this.vel.add(this.acc);
         this.acc.mult(0);
