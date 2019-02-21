@@ -8,10 +8,10 @@ let count = 0;
 let target;
 
 function setup() {
-    createCanvas(750, 700);
+    createCanvas(750, 500);
     rocket = new Rocket();
     population = new Population();
-    // lifeP = createP();
+    lifeP = createP();
     target = createVector(width/2, 50)
 }
 
@@ -20,10 +20,11 @@ function draw() {
     // rocket.update();
     // rocket.show();
     population.run();
-    // lifeP.html(count);
+    lifeP.html(count);
     count++;
     if (count == lifespan) {
         count = 0; // continuously applies force
+        population = new Population();
     }
 
     ellipse(target.x, target.y, 50, 50)
@@ -33,7 +34,7 @@ function DNA() {
     this.genes = [];
     for (var i = 0; i < lifespan; i++) {
         this.genes[i] = p5.Vector.random2D(); // each gene is a random vector
-        this.genes[i].setMag(0.1);
+        this.genes[i].setMag(0.1); // make force a little weaker
     }
 }
 
@@ -44,6 +45,12 @@ function Population() {
     for (var i = 0; i < this.popsize; i++) {
         this.rockets[i] = new Rocket();
 
+    }
+
+    this.evaluate = () => {
+        rockets.forEach( rocket => {
+            rocket.calcFitness( )
+        })
     }
 
     this.run = () => {
@@ -60,9 +67,15 @@ function Rocket() {
     this.vel = createVector();
     this.acc = createVector();
     this.dna = new DNA();
+    this.fitness = 0;
 
     this.applyForce = (force) => {
         this.acc.add(force); 
+    }
+
+    this.calcFitness = () => {
+        var d = dist(this.pos.x, this.pos.y, target.x, target.y)
+        this.fitness = 1 / d // the greater the distance the lower the fitness
     }
 
     // standard physics engine for motion. This is where the physics happens
